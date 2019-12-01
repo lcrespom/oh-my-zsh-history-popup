@@ -23,14 +23,6 @@ _mistory_dialog() {
   dialog --keep-tite --title "History" --menu "" 20 70 15 $@
 }
 
-_mistory_split_history_line() {
-  match=""
-  echo "Testing <$1>"
-  [[ $1 =~ '^[ ]*([0-9]+)[ ]+(.+)$' ]]
-  echo "Num: <$match[1]>"
-  echo "Text: <$match[2]>"
-}
-
 _mistory_main() {
   local history_array
   _mistory_check_dialog || return
@@ -44,6 +36,33 @@ _mistory_main() {
 }
 
 
+zle -N _mistory_main
+bindkey "^[[5~" _mistory_main
+
+
+#----- Testing stuff -----
+
+_mistory_split_history_line() {
+  match=""
+  echo "Testing <$1>"
+  [[ $1 =~ '^[ ]*([0-9]+)[ ]+(.+)$' ]]
+  echo "Num: <$match[1]>"
+  echo "Text: <$match[2]>"
+}
+
+mistory_array_manipulation() {
+  # Define array
+  a=(pim pam pum haha)
+  # Add element to array
+  a+=(bum)
+  # Loop array
+  for e in $a; do echo $e; done
+  # Index from start
+  echo $a[1]
+  # Index from end
+  echo $a[-1]
+}
+
 mistory_test() {
   local line result
   line="  560  git commit -m \"Initial version\""
@@ -51,6 +70,3 @@ mistory_test() {
 }
 
 
-
-zle -N _mistory_main
-bindkey "^[[5~" _mistory_main
