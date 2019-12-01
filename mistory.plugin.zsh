@@ -19,8 +19,10 @@ _mistory_check_dialog() {
 }
 
 _mistory_dialog() {
+  local defitem=$1
+  shift
   #TODO use "tput cols" and "tput lines" to maximize dialog size
-  dialog --keep-tite --title "History" --menu "" 20 70 15 $@
+  dialog --keep-tite --title "History" --default-item $defitem --menu "" 20 70 15 $@
 }
 
 _mistory_main() {
@@ -64,9 +66,21 @@ mistory_array_manipulation() {
 }
 
 mistory_test() {
-  local line result
-  line="  560  git commit -m \"Initial version\""
-  _mistory_split_history_line $line
+  local history_array dialog_items
+  history_array=("${(@f)$(history | grep dialog)}")
+  #echo $history_array
+  dialog_items=()
+  for history_line in $history_array
+  do
+    [[ $history_line =~ '^[ ]*([0-9]+)[ ]+(.+)$' ]] && \
+      dialog_items+=($match[1]) && dialog_items+=($match[2])
+  done
+  _mistory_dialog $dialog_items[-2] $dialog_items
+  #for item in $dialog_items; do echo $item; done
+  #echo $dialog_items
+  # local line result
+  # line="  560  git commit -m \"Initial version\""
+  # _mistory_split_history_line $line
 }
 
 
