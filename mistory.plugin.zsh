@@ -1,15 +1,8 @@
-# TODO:
-# - [x] Keyboard shortcuts => using "zle -N function" and "bindkey code function"
-# - [x] Insert selected line in current line => zle -U
-# - [x] Get content of current line as history filter => $BUFFER
-# - [x] Disable error message on "which" => was silly bug
-# - [x] Gather history
-# - [x] Show in popup
-
 # Regex for matching and splitting a history line in line number and history text.
 _MISTORY_LINE_PATTERN='^[ ]*([0-9]+)\*?[ ]+(.+)$'
 
 
+# Checks whether the `dialog` command is available
 _mistory_check_dialog() {
   which dialog &> /dev/null
   if [ $? -ne 0 ]
@@ -21,6 +14,7 @@ _mistory_check_dialog() {
   fi
 }
 
+# Display a dialog menu with a list of options
 _mistory_dialog() {
   local defitem=$1
   shift
@@ -32,14 +26,13 @@ _mistory_main() {
   # Check if `dialog` command is available, exit otherwise
   _mistory_check_dialog || return
 
-  local history_array dialog_items
   # Get history lines matching text in prompt into an array
   # Multiline to array: https://unix.stackexchange.com/a/29748
-  history_array=("${(@f)$(history | grep "$BUFFER")}")
+  local history_array=("${(@f)$(history | grep "$BUFFER")}")
   #TODO if error / array is empty, make error noise and exit
 
   # Build array of history line pairs (number, text)
-  dialog_items=()
+  local dialog_items=()
   for history_line in $history_array
   do
     [[ $history_line =~ $_MISTORY_LINE_PATTERN ]] && \
@@ -48,24 +41,26 @@ _mistory_main() {
 
   # Show dialog :-)
   local tmpfile=$(mktemp)
+  # Maybe add this: trap "rm -f $tempfile" 0 0 1 2 3 15
   _mistory_dialog $dialog_items[-2] $dialog_items 2> $tmpfile
   local dialog_return=$?
   local sel_number=$(cat $tmpfile)
   rm $tmpfile
-  #TODO trap "rm -f $tempfile" 0 0 1 2 3 15
 
   # Display selection
   zle kill-whole-line
   zle accept-line
-  #TODO if user did not press < OK >, exit but re-display buffer
+  # If user did not press < OK >, exit (TODO: but re-display buffer)
   [[ $dialog_return -ne 0 ]] && return
   # Get history line from selected menu item number
   local sel_line=$(history $sel_number $sel_number)
-  # Get only the text from the history line
+  # Get only the text from the history line and add it to the current line
   [[ $sel_line =~ $_MISTORY_LINE_PATTERN ]] && \
     zle -U $match[2]
 }
 
 
+# Define _mistory_main widget
 zle -N _mistory_main
+# Bind "Page up" to the widget
 bindkey "^[[5~" _mistory_main
