@@ -29,7 +29,6 @@ _mistory_split_history_line() {
   [[ $1 =~ '^[ ]*([0-9]+)[ ]+(.+)$' ]]
   echo "Num: <$match[1]>"
   echo "Text: <$match[2]>"
-  return "asdf"
 }
 
 _mistory_main() {
@@ -46,17 +45,9 @@ _mistory_main() {
 
 
 mistory_test() {
-  # local history_array
-  # history_array=("${(@f)$(df | grep disk)}")
-  # _mistory_dialog $history_array
   local line result
   line="  560  git commit -m \"Initial version\""
-  result=(_mistory_split_history_line $line)
-  echo "-$result-"
-  # [[ $line =~ '^[ ]*([0-9]+)[ ]+(.+)$' ]]
-  # echo "<$match[1]>"
-  # echo "<$match[2]>"
-  # match=""
+  _mistory_split_history_line $line
 }
 
 
