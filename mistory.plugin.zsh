@@ -26,13 +26,19 @@ _mistory_dialog() {
 }
 
 _mistory_main() {
-  local history_array
   _mistory_check_dialog || return
+  local history_array dialog_items
   # Multiline to array: https://unix.stackexchange.com/a/29748
   history_array=("${(@f)$(history | grep "$BUFFER")}")
+  dialog_items=()
+  for history_line in $history_array
+  do
+    [[ $history_line =~ '^[ ]*([0-9]+)[ ]+(.+)$' ]] && \
+      dialog_items+=($match[1]) && dialog_items+=($match[2])
+  done
+  _mistory_dialog $dialog_items[-2] $dialog_items
+
   zle kill-whole-line
-  _mistory_dialog $history_array
-  #echo $hist
   #zle -U "You were typing <$wastyping>, right?"
   #zle accept-line
 }
