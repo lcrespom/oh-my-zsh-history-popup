@@ -16,10 +16,16 @@ _mistory_check_dialog() {
 
 # Display a dialog menu with a list of options
 _mistory_dialog() {
+  # Get default selection
   local defitem=$1
   shift
-  #TODO use "tput cols" and "tput lines" to maximize dialog size
-  dialog --keep-tite --title "History" --default-item $defitem --menu "" 20 70 15 $@
+  # Compute dialog size
+  local ww hh mh
+  ((ww = $(tput cols) - 8))
+  ((hh = $(tput lines) - 4))
+  ((mh = hh - 6))
+  # Open dialog
+  dialog --keep-tite --title "History" --default-item $defitem --menu "" $hh $ww $mh $@
 }
 
 _mistory_main() {
