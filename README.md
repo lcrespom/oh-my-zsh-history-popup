@@ -1,7 +1,7 @@
 # Mistory
 An oh-my-zsh plugin that captures the `PageUp` key and opens a popup menu with the history, so the user can interactively navigate through it and pick the history line to bring back to the prompt.
 
-If the command line is empty when pressing `PageUp`, the popup will display all history, starting from the latest line and up to the beginning. If the command line contains some text, the popup will use that text to filter the history via the `grep` command, and display only the matching lines.
+If the command line is empty when pressing `PageUp`, the popup displays all history, starting from the latest line and up to the beginning. If the command line contains some text, the popup uses that text to filter the history via the `grep` command, and display only the matching lines.
 
 When the user selects a given history line, its text is placed in the command line, so it can be edited before hitting enter.
 
